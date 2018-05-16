@@ -1,6 +1,10 @@
+# runtime requirements
+dask
+sklearn
+
+# testing/dev requirements
 pytest
 pytest-cov
 codecov
 sphinx
 flake8
-
