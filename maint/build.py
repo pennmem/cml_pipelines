@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-
 from argparse import ArgumentParser
 import glob
 import os
@@ -18,7 +16,7 @@ parser.add_argument("--no-build", action="store_true",
                     help="don't build conda packages")
 parser.add_argument("--no-convert", action="store_true",
                     help="don't run conda convert")
-parser.add_argument("--python", "-p", nargs="+", default=["2.7", "3.5", "3.6"],
+parser.add_argument("--python", "-p", nargs="+", default=["3.5", "3.6"],
                     help="python versions to build for (otherwise build all)")
 parser.add_argument("--upload", action="store_true")
 

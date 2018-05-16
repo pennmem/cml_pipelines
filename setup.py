@@ -10,12 +10,6 @@ with open('README.rst') as readme_file:
 with open('CHANGELOG.rst') as history_file:
     history = history_file.read()
 
-# TODO: put package requirements here
-requirements = []
-
-# TODO: put setup requirements here
-setup_requirements = []
-
 setup(
     name='cml_pipelines',
     version=__version__,
@@ -25,8 +19,6 @@ setup(
     url='https://github.com/pennmem/cml_pipelines',
     packages=find_packages(include=['cml_pipelines']),
     include_package_data=True,
-    install_requires=requirements,
     zip_safe=False,
-    keywords='cml_pipelines',
-    setup_requires=setup_requirements,
+    keywords='pipelines',
 )

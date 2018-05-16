@@ -2,13 +2,13 @@
 {% set setup_data = load_setup_py_data() %}
 
 package:
-  name: {{ cookiecutter.project_slug }}
+  name: cml_pipelines
   version: {{ setup_data['version'] }}
 
 
 source:
   git_url: ../
-  git_rev: {{ 'v' + setup_data['version'] }}  # always use tagged version
+  # git_rev: {{ 'v' + setup_data['version'] }}  # always use tagged version
 
 build:
   # If this is a new build for the same version, increment the build
@@ -21,25 +21,30 @@ build:
 
 # Common dependencies that need to be listed in both the build and run
 # subsections of the requirements section.
-{% set deps = [] %}
+{% set deps = ['dask', 'scikit-learn'] %}
 
 requirements:
   build:
     # We default to Python 3.6 if no environment variable is set
-    - python {{'{{ python }}'}}
+    - python {{ python }}
     - setuptools
+    - dask
+    - scikit-learn
 
   run:
-    - python {{'{{ python }}'}}
-    # - vs2015_runtime  [win]
+    - python {{ python }}
+    - dask
+    - scikit-learn
 
 test:
   # Test that we can import the package
   imports:
-    - {{ cookiecutter.project_slug }}
+    - cml_pipelines
+    - cml_pipelines.hooks
+    - cml_pipelines.wrapper
 
 about:
-  home: https://github.com/pennmem/{{ cookiecutter.project_slug }}
+  home: https://github.com/pennmem/cml_pipelines
   summary: {{ setup_data['description'] }}
   # license: FIXME
   # license_file: FIXME
