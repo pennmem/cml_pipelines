@@ -1,5 +1,6 @@
 # runtime requirements
 dask
+toolz  # apparently dask requires this
 sklearn
 
 # testing/dev requirements
