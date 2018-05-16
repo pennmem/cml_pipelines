@@ -15,7 +15,7 @@ def generate_datapoint():
 # build pipeline
 data = [generate_datapoint() for _ in range(1000)]
 
-# use make_task to wrap an existsing function as a task
+# use make_task to wrap an existing function as a task
 total = make_task(reduce, operator.add, data)
 
 # get the result
