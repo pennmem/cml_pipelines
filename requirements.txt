@@ -1,7 +1,7 @@
 # runtime requirements
 dask
 toolz  # apparently dask requires this
-sklearn
+scikit-learn
 
 # testing/dev requirements
 pytest
