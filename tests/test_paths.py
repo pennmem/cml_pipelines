@@ -23,5 +23,5 @@ class TestFilePaths:
     def test_keys(self):
         keys = self.test_paths.keys()
         assert len(keys) == 2
-        assert keys[0] == "dir1"
-        assert keys[1] == "dir2"
+        assert "dir1" in keys
+        assert "dir2" in keys
