@@ -10,5 +10,14 @@ def test_cachedir(tmpdir):
         return p
 
     doit(1)
-
     assert os.path.exists(tmpdir.join("test_cache").join("doit"))
+
+    # change to a new location
+    memory.cachedir = tmpdir.join("other")
+
+    @memory.cache
+    def doit2(p):
+        return p
+
+    doit2(1)
+    assert os.path.exists(tmpdir.join("other").join("test_cache").join("doit2"))
