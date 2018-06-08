@@ -1,11 +1,10 @@
 import functools
 import logging
-from tempfile import gettempdir
 
 from dask import delayed
-from sklearn.externals import joblib
 
-memory = joblib.Memory(cachedir=gettempdir(), verbose=0)
+from .cache import memory
+
 logger = logging.getLogger('cml.pipelines')
 
 

@@ -1,6 +1,7 @@
 from collections import namedtuple
 import logging
 
+from .cache import memory
 from .wrapper import task, make_task
 
 __version__ = '1.1.0'
