@@ -25,6 +25,23 @@ class Pipeline(object):
         """
         raise NotImplementedError
 
+    def visualize(self, *args, **kwargs):
+        """Use graphviz to visualize the task graph.
+
+        Notes
+        -----
+        This method requires that ``graphviz`` is installed on your machine and
+        that the ``python-graphviz`` package is installed. This can be done by
+        running::
+
+            $ conda install -c conda-forge python-graphviz
+
+        """
+        try:
+            self.build().visualize(*args, **kwargs)
+        except RuntimeError:
+            raise RuntimeError("Please install graphviz and python-graphviz")
+
     def run(self) -> Future:
         """Run the pipeline. Returns a :class:`Future` which will contain the
         result.

@@ -24,6 +24,10 @@ class TestPipeline:
             pipeline = MyPipeline(clear_cache)
             future = pipeline.run()
             assert isinstance(future, Future)
-            assert future.result(timeout=1) == 2
+            assert future.result(timeout=0.1) == 2
             if clear_cache:
                 assert clear_func.call_count == 1
+
+    def test_visualize(self):
+        pipeline = MyPipeline()
+        pipeline.visualize()
