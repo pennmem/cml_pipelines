@@ -20,7 +20,7 @@ class Pipeline(object):
     def build(self) -> Delayed:
         """Override this method to define a pipeline. This method must return a
         :class:`Delayed` instance. This is most easily accomplished by returning
-        the result of a function wrapped with the ``task``.
+        the result of a function wrapped with the ``task`` decorator.
 
         """
         raise NotImplementedError
