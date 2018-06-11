@@ -1,7 +1,12 @@
 # runtime requirements
 dask
-toolz  # apparently dask requires this
+numpy
 scikit-learn
+scipy
+toolz  # apparently dask requires this
+
+# optional for task graph vizualization
+python-graphviz
 
 # testing/dev requirements
 pytest
