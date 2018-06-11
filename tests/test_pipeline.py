@@ -5,8 +5,7 @@ from unittest.mock import patch
 import pytest
 from sklearn.externals.joblib import Memory
 
-from cml_pipelines import task
-from cml_pipelines.pipeline import Pipeline
+from cml_pipelines import Pipeline, task
 
 
 class MyPipeline(Pipeline):
