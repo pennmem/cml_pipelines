@@ -14,8 +14,6 @@ class Pipeline(object):
         When True (the default), clear the cache upon successful completion.
 
     """
-    executor = ThreadPoolExecutor(max_workers=1)
-
     def __init__(self, clear_cache_on_completion: bool = True):
         self.clear_cache_on_completion = clear_cache_on_completion
 
@@ -32,8 +30,9 @@ class Pipeline(object):
         result.
 
         """
-        pipeline = self.build()
-        future = self.executor.submit(pipeline.compute)
-        if self.clear_cache_on_completion:
-            future.add_done_callback(lambda f: memory.clear(warn=False))
-        return future
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            pipeline = self.build()
+            future = executor.submit(pipeline.compute)
+            if self.clear_cache_on_completion:
+                future.add_done_callback(lambda f: memory.clear(warn=False))
+            return future
