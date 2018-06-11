@@ -26,4 +26,4 @@ class TestPipeline:
             assert isinstance(future, Future)
             assert future.result(timeout=1) == 2
             if clear_cache:
-                clear_func.assert_called_once()
+                assert clear_func.call_count == 1
