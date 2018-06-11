@@ -1,7 +1,9 @@
 # runtime requirements
 dask
-toolz  # apparently dask requires this
+numpy
 scikit-learn
+scipy
+toolz  # apparently dask requires this
 
 # testing/dev requirements
 pytest
