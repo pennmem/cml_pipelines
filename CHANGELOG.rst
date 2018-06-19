@@ -1,6 +1,12 @@
 Changes
 =======
 
+Version 1.1.1
+-------------
+Bug Fixes:
+* `wrapper.make_task()` now accepts the same keyword arguments as `wrapper.task()`;
+  was previously missing `nout` argument
+
 Version 1.1.0
 -------------
 **2018-05-17**
