@@ -1,4 +1,5 @@
 from concurrent.futures import Future, ThreadPoolExecutor
+from typing import Any, Union
 
 from dask.delayed import Delayed
 
@@ -39,17 +40,42 @@ class Pipeline(object):
         """
         try:
             self.build().visualize(*args, **kwargs)
-        except RuntimeError:
+        except RuntimeError:  # pragma: nocover
             raise RuntimeError("Please install graphviz and python-graphviz")
 
-    def run(self) -> Future:
-        """Run the pipeline. Returns a :class:`Future` which will contain the
-        result.
-
-        """
+    def _run_async(self):
         with ThreadPoolExecutor(max_workers=1) as executor:
             pipeline = self.build()
             future = executor.submit(pipeline.compute)
             if self.clear_cache_on_completion:
                 future.add_done_callback(lambda f: memory.clear(warn=False))
             return future
+
+    def _run_sync(self):
+        pipeline = self.build()
+        result = pipeline.compute()
+
+        if self.clear_cache_on_completion:
+            memory.clear(warn=False)
+
+        return result
+
+    def run(self, block=False) -> Union[Future, Any]:
+        """Run the pipeline.
+
+        Parameters
+        ----------
+        block
+            When True, block until completion.
+
+        Returns
+        -------
+        If ``block`` is set, returns the result of running the pipeline.
+        Otherwise returns a :class:`Future` which resolves when the pipeline
+        is complete.
+
+        """
+        if not block:
+            return self._run_async()
+        else:
+            return self._run_sync()
