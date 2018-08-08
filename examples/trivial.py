@@ -25,5 +25,5 @@ class MyPipeline(Pipeline):
 
 # run the pipeline
 pipeline = MyPipeline()
-future = pipeline.run()
-print(future.result())
+result = pipeline.run()
+print(result)

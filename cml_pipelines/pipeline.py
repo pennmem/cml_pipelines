@@ -60,13 +60,14 @@ class Pipeline(object):
 
         return result
 
-    def run(self, block=False) -> Union[Future, Any]:
+    def run(self, block=True) -> Union[Future, Any]:
         """Run the pipeline.
 
         Parameters
         ----------
         block
-            When True, block until completion.
+            When True (the default), block until completion. Otherwise, return
+            a :class:`Future`.
 
         Returns
         -------
