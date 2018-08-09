@@ -11,10 +11,12 @@ CML Pipelines
    :target: https://pennmem.github.io/pennmem/cml_pipelines/html/index.html
    :alt: docs
 
-Utilities for constructing pipelines with dask.
+Build pipelines with dask and optionally run on the CML SGE cluster.
 
-Usage example
--------------
+Usage
+-----
+
+Running locally:
 
 .. code:: python
 
@@ -49,3 +51,5 @@ Usage example
     pipeline = MyPipeline()
     result = pipeline.run()
     print(result)
+
+To run on the cluster, pass ``cluster=True`` to ``pipeline.run``.
