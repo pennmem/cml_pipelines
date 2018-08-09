@@ -1,10 +1,12 @@
 from concurrent.futures import Future
+import socket
 from unittest.mock import patch
 
 import pytest
 from sklearn.externals.joblib import Memory
 
 from cml_pipelines import Pipeline, task
+from cml_pipelines.pipeline import CLUSTER_DEFAULTS
 
 
 class MyPipeline(Pipeline):
@@ -38,6 +40,36 @@ class TestPipeline:
 
             if clear_cache:
                 assert clear_func.call_count == 1
+
+    @pytest.mark.parametrize("cluster_kwargs", [None, {"cores": 4}])
+    def test_run_cluster(self, cluster_kwargs):
+        with patch("dask_jobqueue.SGECluster") as MockCluster:
+            with patch("dask.distributed.Client") as MockClient:
+                pipeline = MyPipeline()
+                pipeline.run(cluster=True, cluster_kwargs=cluster_kwargs)
+
+                if cluster_kwargs is None:
+                    kwargs = CLUSTER_DEFAULTS
+                else:
+                    kwargs = CLUSTER_DEFAULTS.copy()
+                    kwargs.update(cluster_kwargs)
+
+                MockClient.assert_called()
+
+                call_args = MockCluster.call_args
+                assert call_args is not None
+                args = call_args[1]
+
+                for key, value in args.items():
+                    assert key in kwargs
+                    assert kwargs[key] == value
+
+    @pytest.mark.skipif("rhino" not in socket.gethostname())
+    def test_run_cluster_rhino(self):
+        """Test running on the actual SGE cluster."""
+        pipeline = MyPipeline()
+        result = pipeline.run(cluster=True)
+        assert result == 2
 
     def test_visualize(self):
         pipeline = MyPipeline()
