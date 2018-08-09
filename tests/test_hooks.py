@@ -1,7 +1,8 @@
 from threading import Lock
 
+from dask import delayed
+
 from cml_pipelines.hooks import PipelineCallback, PipelineStatusListener
-from cml_pipelines.wrapper import task
 
 
 class Counter:
@@ -23,7 +24,7 @@ class Counter:
 def test_pipeline_callback():
     results = []
 
-    @task()
+    @delayed
     def my_task():
         return 0
 
