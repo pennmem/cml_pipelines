@@ -5,8 +5,6 @@ from typing import Any, Union
 
 from dask.delayed import Delayed
 
-from .cache import memory
-
 CLUSTER_DEFAULTS = {
     "queue": "RAM.q",
     "memory": "8G",
@@ -17,20 +15,10 @@ CLUSTER_DEFAULTS = {
 
 
 class Pipeline(object):
-    """Base class for building pipelines.
-
-    Parameters
-    ----------
-    clear_cache_on_completion
-        When True (the default), clear the cache upon successful completion.
-
-    """
+    """Base class for building pipelines."""
     # dask instances for running on the cluster
     cluster = None
     client = None
-
-    def __init__(self, clear_cache_on_completion: bool = True):
-        self.clear_cache_on_completion = clear_cache_on_completion
 
     def build(self) -> Delayed:
         """Override this method to define a pipeline. This method must return a
@@ -61,17 +49,11 @@ class Pipeline(object):
         with ThreadPoolExecutor(max_workers=1) as executor:
             pipeline = self.build()
             future = executor.submit(pipeline.compute)
-            if self.clear_cache_on_completion:
-                future.add_done_callback(lambda f: memory.clear(warn=False))
             return future
 
     def _run_sync(self):
         pipeline = self.build()
         result = pipeline.compute()
-
-        if self.clear_cache_on_completion:
-            memory.clear(warn=False)
-
         return result
 
     def run(self, block: bool = True,

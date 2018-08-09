@@ -2,15 +2,14 @@ from concurrent.futures import Future
 import socket
 from unittest.mock import patch
 
+from dask import delayed
 import pytest
-from sklearn.externals.joblib import Memory
 
-from cml_pipelines import Pipeline, task
-from cml_pipelines.pipeline import CLUSTER_DEFAULTS
+from cml_pipelines.pipeline import Pipeline, CLUSTER_DEFAULTS
 
 
 class MyPipeline(Pipeline):
-    @task()
+    @delayed
     def add(self, a, b):
         return a + b
 
@@ -24,22 +23,17 @@ class TestPipeline:
         with pytest.raises(NotImplementedError):
             pipeline.build()
 
-    @pytest.mark.parametrize("clear_cache", [True, False])
     @pytest.mark.parametrize("block", [True, False])
-    def test_run(self, clear_cache, block):
-        with patch.object(Memory, "clear") as clear_func:
-            pipeline = MyPipeline(clear_cache)
-            result = pipeline.run(block=block)
+    def test_run(self, block):
+        pipeline = MyPipeline()
+        result = pipeline.run(block=block)
 
-            if not block:
-                assert isinstance(result, Future)
-                assert result.result(timeout=0.1) == 2
-            else:
-                assert isinstance(result, int)
-                assert result == 2
-
-            if clear_cache:
-                assert clear_func.call_count == 1
+        if not block:
+            assert isinstance(result, Future)
+            assert result.result(timeout=0.1) == 2
+        else:
+            assert isinstance(result, int)
+            assert result == 2
 
     @pytest.mark.parametrize("cluster_kwargs", [None, {"cores": 4}])
     def test_run_cluster(self, cluster_kwargs):
@@ -64,7 +58,8 @@ class TestPipeline:
                     assert key in kwargs
                     assert kwargs[key] == value
 
-    @pytest.mark.skipif("rhino" not in socket.gethostname())
+    @pytest.mark.skipif("rhino" not in socket.gethostname(),
+                        reason="not running tests on rhino")
     def test_run_cluster_rhino(self):
         """Test running on the actual SGE cluster."""
         pipeline = MyPipeline()
