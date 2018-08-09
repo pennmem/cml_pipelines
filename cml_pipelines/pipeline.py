@@ -1,9 +1,9 @@
 from concurrent.futures import Future, ThreadPoolExecutor
 from getpass import getuser
 import os
-from typing import Any, Union
+from typing import Any, List, Union
 
-from dask.delayed import Delayed
+from dask.delayed import Delayed, delayed
 
 CLUSTER_DEFAULTS = {
     "queue": "RAM.q",
@@ -40,6 +40,34 @@ class Pipeline(object):
             self.build().visualize(*args, **kwargs)
         except RuntimeError:  # pragma: nocover
             raise RuntimeError("Please install graphviz and python-graphviz")
+
+    @delayed
+    def sink(self, results: List[Delayed],
+             return_all: bool = False) -> Union[None, list]:
+        """Generic sink function for returning a single :class:`Delayed`
+        instance from :meth:`build`.
+
+        A common pattern might result in several calculations being run in
+        parallel without a final step required to reduce to a single result, so
+        this method can be used to help with that:
+
+        .. code:: python
+
+            def build(self):
+                results = [self.run_task(x) for x in range(100)]
+                return self.sink(results)
+
+        Parameters
+        ----------
+        results
+            :class:`Delayed` instances to sink.
+        return_all
+            When set, all accumulated results will be returned. When not (the
+            default), return ``None``.
+
+        """
+        if return_all:
+            return results
 
     def _run_async(self):
         with ThreadPoolExecutor(max_workers=1) as executor:

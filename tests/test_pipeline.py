@@ -17,6 +17,15 @@ class MyPipeline(Pipeline):
         return self.add(1, 1)
 
 
+class SinkPipeline(MyPipeline):
+    def __init__(self, return_all):
+        self.return_all = return_all
+
+    def build(self):
+        sums = [self.add(a, a + 1) for a in range(10)]
+        return self.sink(sums, self.return_all)
+
+
 class TestPipeline:
     def test_build_not_implemented(self):
         pipeline = Pipeline()
@@ -70,3 +79,16 @@ class TestPipeline:
     def test_visualize(self):
         pipeline = MyPipeline()
         pipeline.visualize()
+
+    @pytest.mark.parametrize("return_all", [True, False])
+    def test_sink(self, return_all):
+        pipeline = SinkPipeline(return_all)
+        results = pipeline.run()
+
+        if return_all:
+            assert isinstance(results, list)
+            assert len(results) == 10
+            for i, value in enumerate(results):
+                assert value == i + i + 1
+        else:
+            assert results is None
