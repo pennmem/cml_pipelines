@@ -48,7 +48,7 @@ class TestPipeline:
                     kwargs = CLUSTER_DEFAULTS.copy()
                     kwargs.update(cluster_kwargs)
 
-                MockClient.assert_called()
+                assert MockClient.call_count == 1
 
                 call_args = MockCluster.call_args
                 assert call_args is not None
