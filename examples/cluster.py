@@ -14,7 +14,7 @@ import numpy as np
 from scipy.stats import zscore
 from toolz import pipe
 
-from cml_pipelines import Pipeline, task
+from cml_pipelines import Pipeline
 from cmlreaders import CMLReader
 from ptsa.data.filters import ButterworthFilter, MorletWaveletFilter
 from ptsa.data.timeseries import TimeSeries
@@ -180,25 +180,14 @@ if __name__ == "__main__":
     # subjects = np.random.choice(fr1.subject.unique(), 2)
     subjects = ["R1111M", "R1286J", "R1290M", "R1187P", "R1363T"]
 
-    if not args.local:
-        from dask_jobqueue import SGECluster
-        from distributed import Client
+    if args.local:
+        cluster_kwargs = {}
+    else:
+        cluster_kwargs = {
+            "memory": "32G",
+        }
 
         logger.info("Setting up cluster; stdout logging won't be captured")
-
-        # Configure parameters for qsub
-        cluster = SGECluster(queue="RAM.q",
-                             name="zscores",
-                             memory="32G",
-                             cores=2,
-                             walltime="12:00:00",
-                             local_directory="/scratch/depalati/dask")
-
-        # Ask for as many workers as there are subjects or 10, whichever is less
-        cluster.scale(min(len(subjects), 10))
-
-        # Launch the dask distributed client
-        client = Client(cluster)
 
     # Run the pipeline
     pipeline = ZScoredPowersPipeline(subjects)
@@ -206,6 +195,8 @@ if __name__ == "__main__":
     if args.visualize:
         pipeline.visualize()
 
-    path = pipeline.run(block=True)
+    workers = min(10, len(subjects))
+    path = pipeline.run(block=True, cluster=(not args.local),
+                        cluster_kwargs=cluster_kwargs, workers=workers)
     logger.info("Wrote HDF5 file to %s", str(path))
     pipeline.cleanup()
