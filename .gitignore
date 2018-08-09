@@ -2,6 +2,7 @@
 .pytest_cache/
 cml_pipelines_cache/
 examples/zscores.o*
+dask-worker.o*
 *mydask.png
 
 # Byte-compiled / optimized / DLL files

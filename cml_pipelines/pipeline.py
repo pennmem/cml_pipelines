@@ -16,10 +16,6 @@ CLUSTER_DEFAULTS = {
 
 class Pipeline(object):
     """Base class for building pipelines."""
-    # dask instances for running on the cluster
-    cluster = None
-    client = None
-
     def build(self) -> Delayed:
         """Override this method to define a pipeline. This method must return a
         :class:`Delayed` instance. This is most easily accomplished by returning
@@ -93,9 +89,9 @@ class Pipeline(object):
                 kwargs = CLUSTER_DEFAULTS.copy()
                 kwargs.update(cluster_kwargs)
 
-            self.cluster = SGECluster(**kwargs)
-            self.cluster.scale(workers)
-            self.client = Client(self.cluster)
+            cluster = SGECluster(**kwargs)
+            cluster.scale(workers)
+            _ = Client(cluster)
 
         if not block:
             return self._run_async()
