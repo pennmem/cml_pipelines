@@ -1,6 +1,6 @@
 # runtime requirements
 dask
-dask_jobqueue
+dask-jobqueue
 distributed
 numpy
 scikit-learn
