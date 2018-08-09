@@ -3,7 +3,6 @@ dask
 dask-jobqueue
 distributed
 numpy
-scikit-learn
 scipy
 toolz  # apparently dask requires this
 

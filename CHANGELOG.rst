@@ -1,6 +1,19 @@
 Changes
 =======
 
+Version 2.0.0
+-------------
+
+**2018-08-09**
+
+* Support for caching has been removed. While this feature was potentially
+  useful, the ``joblib`` implementation was sometimes causing more trouble than
+  it was worth. A modified approach to caching may be added in a future
+  release.
+* The ``task`` decorator and friends have been removed. Use the ``dask.delayed``
+  decorator directly.
+* Support for running pipelines on rhino's SGE cluster was added.
+
 Version 1.1.1
 -------------
 
