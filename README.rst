@@ -22,12 +22,14 @@ Usage example
     import operator
     import random
 
-    from cml_pipelines import Pipeline, task, make_task
+    from dask import delayed
+
+    from cml_pipelines import Pipeline
 
 
     class MyPipeline(Pipeline):
-        # Define a task using the task decorator
-        @task(cache=False)
+        # Define a task using the delayed decorator
+        @delayed
         def generate_datapoint(self):
             """Generate a single data point."""
             return random.random()
@@ -36,8 +38,8 @@ Usage example
             """Build the pipeline."""
             data = [self.generate_datapoint() for _ in range(1000)]
 
-            # use make_task to wrap an existing function as a task
-            total = make_task(reduce, operator.add, data)
+            # inline the delayed function to make an existing function into a task
+            total = delayed(reduce)(operator.add, data)
 
             # return the final Delayed instance
             return total
