@@ -23,13 +23,11 @@ requirements:
     - python {{ python }}
     - setuptools
     - dask
-    - dask-jobqueue
     - distributed
 
   run:
     - python {{ python }}
     - dask
-    - dask-jobqueue
     - distributed
 
 test:
