@@ -75,15 +75,17 @@ class Pipeline(object):
             future = executor.submit(pipeline.compute)
             return future
 
-    def _run_sync(self):
+    def _run_sync(self, debug: bool):
         pipeline = self.build()
-        result = pipeline.compute()
+        kwargs = {"scheduler": "single-threaded"} if debug else {}
+        result = pipeline.compute(**kwargs)
         return result
 
     def run(self, block: bool = True,
             cluster: bool = False,
             cluster_kwargs: dict = None,
-            workers: int = 8) -> Union[Future, Any]:
+            workers: int = 8,
+            debug: bool = False) -> Union[Future, Any]:
         """Run the pipeline.
 
         Parameters
@@ -99,6 +101,9 @@ class Pipeline(object):
         workers
             Number of workers to use when running on the SGE cluster
             (default: 8).
+        debug
+            When True, disable the cluster and use the single-threaded dask
+            scheduler for debugging.
 
         Returns
         -------
@@ -107,7 +112,7 @@ class Pipeline(object):
         is complete.
 
         """
-        if cluster:
+        if cluster and not debug:
             from dask_jobqueue import SGECluster
             from dask.distributed import Client
 
@@ -121,7 +126,7 @@ class Pipeline(object):
             cluster.scale(workers)
             _ = Client(cluster)
 
-        if not block:
+        if not block and not debug:
             return self._run_async()
         else:
-            return self._run_sync()
+            return self._run_sync(debug)

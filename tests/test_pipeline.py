@@ -76,6 +76,13 @@ class TestPipeline:
     #     result = pipeline.run(cluster=True)
     #     assert result == 2
 
+    @pytest.mark.parametrize("debug", [True, False])
+    def test_run_debug(self, debug):
+        with patch.object(MyPipeline, "_run_sync") as run_sync:
+            pipeline = MyPipeline()
+            pipeline.run(debug=debug)
+            run_sync.assert_called_with(debug)
+
     def test_visualize(self):
         pipeline = MyPipeline()
         pipeline.visualize()
