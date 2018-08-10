@@ -1,7 +1,9 @@
 from concurrent.futures import Future, ThreadPoolExecutor
 from getpass import getuser
+import logging
 import os
 from typing import Any, List, Union
+from uuid import uuid4
 
 from dask.delayed import Delayed, delayed
 
@@ -16,6 +18,33 @@ CLUSTER_DEFAULTS = {
 
 class Pipeline(object):
     """Base class for building pipelines."""
+    _handler = None  # type: logging.Handler
+    _logger = None  # type: logging.Logger
+
+    # An identifier to give the pipeline.
+    pipeline_id = uuid4().hex
+
+    def get_logger(self, address: str,
+                   level: int = logging.INFO) -> logging.Logger:
+        """Get a logger and configure it to send log records along a ZMQ
+        socket. See the :mod:`cml_pipelines.log` module for details.
+
+        Parameters
+        ----------
+        address
+            The ZMQ address for the log consumer.
+        level
+            Log level to use.
+
+        """
+        if self._logger is None:
+            from .log import ZMQLogHandler
+            self._handler = ZMQLogHandler(address, level=level)
+            self._logger = logging.getLogger(self.pipeline_id)
+            self._logger.addHandler(self._handler)
+
+        return self._logger
+
     def build(self) -> Delayed:
         """Override this method to define a pipeline. This method must return a
         :class:`Delayed` instance. This is most easily accomplished by returning

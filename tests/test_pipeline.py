@@ -1,5 +1,5 @@
 from concurrent.futures import Future
-import socket
+import logging
 from unittest.mock import patch
 
 from dask import delayed
@@ -99,3 +99,13 @@ class TestPipeline:
                 assert value == i + i + 1
         else:
             assert results is None
+
+    def test_get_logger(self):
+        from cml_pipelines.log import ZMQLogHandler
+
+        pipeline = MyPipeline()
+        logger = pipeline.get_logger("tcp://127.0.0.1:9897")
+        assert isinstance(logger, logging.Logger)
+        assert logger.name == pipeline.pipeline_id
+        zmq_handler = [isinstance(h, ZMQLogHandler) for h in logger.handlers]
+        assert any(zmq_handler)
