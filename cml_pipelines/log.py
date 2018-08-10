@@ -39,7 +39,7 @@ class BaseLogConsumer(object):
     ----------
     name
         Name of the logger to use for centralized logging
-        (default: "cml.pipelines").
+        (default: "cml").
     address
         ZMQ address string to bind the socket. Default: ``tcp://*:9777``.
     ctx
@@ -51,7 +51,7 @@ class BaseLogConsumer(object):
     """
     logger = None  # type: logging.Logger
 
-    def __init__(self, name: str = "cml.pipelines",
+    def __init__(self, name: str = "cml",
                  address: str = "tcp://*:9777",
                  ctx: Optional[zmq.Context] = None,
                  poll_interval: int = 1000):
@@ -70,6 +70,10 @@ class BaseLogConsumer(object):
         if self._ctx is None:
             self._ctx = zmq.Context()
         return self._ctx
+
+    @property
+    def port(self) -> int:
+        return int(self.address.split(":")[-1])
 
     def ready(self) -> bool:
         """Check if the socket loop is running."""
@@ -113,7 +117,15 @@ class LogConsumerThread(BaseLogConsumer, threading.Thread):
         threading.Thread.__init__(self)
         BaseLogConsumer.__init__(self, *args, **kwargs)
 
-    @property
+    def __enter__(self):
+        self.start()
+        self._ready.wait()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop()
+        self.join()
+
     def ready(self):
         return self._ready.is_set()
 
